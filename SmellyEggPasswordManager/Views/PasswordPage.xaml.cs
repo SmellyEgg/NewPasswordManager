@@ -2,6 +2,7 @@
 using SmellyEggPasswordManager.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -29,7 +30,7 @@ namespace SmellyEggPasswordManager.Views
         {
             if (object.Equals(_currentUser, null)) return;
             LoginController lc = new LoginController();
-            _currentDataSource = await lc.GetAccounts(_currentUser);
+            _currentDataSource = await Task.Run(()=> lc.GetAccounts(_currentUser));
             var filterStr = _currentDataSource.AsParallel().GroupBy(p => p.AccountType)
                 .Select(p => p.FirstOrDefault().AccountType).ToList();
             if (filterStr == null) filterStr = new List<string>();
@@ -47,15 +48,6 @@ namespace SmellyEggPasswordManager.Views
             if (!string.IsNullOrEmpty(txtFilter.Text))
             {
                 FilterAccount();
-            }
-        }
-
-        private void MyListView_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            var item = MyListView.SelectedItem;
-            if (!object.Equals(item, null))
-            {
-                ShowAccountByType(item.ToString());
             }
         }
 
@@ -168,6 +160,15 @@ namespace SmellyEggPasswordManager.Views
             if (frm.ShowDialog() == true)
             {
                 Refresh();
+            }
+        }
+
+        private void MyListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item = MyListView.SelectedItem;
+            if (!object.Equals(item, null))
+            {
+                ShowAccountByType(item.ToString());
             }
         }
     }

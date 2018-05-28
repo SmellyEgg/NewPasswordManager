@@ -1,5 +1,6 @@
 ﻿using SmellyEggPasswordManager.Controller;
 using SmellyEggPasswordManager.Models;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -53,11 +54,11 @@ namespace SmellyEggPasswordManager.Views
             {
                 User user = new User() { UserName = txtUserName.Text, UserPassword = txtPassword.Password};
                 LoginController sql = new LoginController();
-                //myLoading.Visibility = Visibility.Visible;
-                //myLoading.Spin = true;
-                var result = await sql.TryLogin(user);
-                //myLoading.Visibility = Visibility.Hidden;
-                //myLoading.Spin = false;
+                myLoading.Visibility = Visibility.Visible;
+                myLoading.Spin = true;
+                var result = await Task.Run(()=> sql.TryLogin(user));
+                myLoading.Visibility = Visibility.Hidden;
+                myLoading.Spin = false;
                 if (!object.Equals(result, null))
                 {
                     MessageBox.Show("登陆成功");

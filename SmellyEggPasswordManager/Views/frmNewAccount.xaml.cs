@@ -47,7 +47,7 @@ namespace SmellyEggPasswordManager.Views
             {
                 LoginController lc = new LoginController();
                 Account account = new Account() { AccountName = txtAccountName.Text, AccountPassword = txtAccountPassword.Password, AccountType = MyAccountTypeCombo.Text};
-                var result = await lc.AddAccount(account, _currentUser);
+                var result = await Task.Run(()=> lc.AddAccount(account, _currentUser));
                 if (result)
                 {
                     MessageBox.Show("新增账户成功！");
