@@ -62,7 +62,7 @@ namespace SmellyEggPasswordManager.Views
                 {
                     MessageBox.Show("登陆成功");
                     //跳转到密码管理界面
-                    //_mainFrame.Navigate();
+                    _mainFrame.Navigate(new PasswordPage(_mainFrame, result));
                 }
                 else
                 {

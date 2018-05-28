@@ -24,8 +24,9 @@ namespace SmellyEggPasswordManager
         public MainWindow()
         {
             InitializeComponent();
-            MainFrame.Navigate(new MyLoginPage(MainFrame));
 
+            MainFrame.Navigate(new MyLoginPage(MainFrame));
+            //MainFrame.Navigate(new PasswordPage());
         }
 
     }

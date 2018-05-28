@@ -8,6 +8,7 @@
         MinWidth="600"
         MinHeight="450"
         WindowStartupLocation="CenterScreen"
+        Icon="/Images/windowicon.png"
         >
     <Grid>
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden">
