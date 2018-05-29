@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
         Title="frmEditAccount"  Height="275.826" Width="329.855"
         WindowStartupLocation="CenterScreen"
@@ -43,6 +44,9 @@
                 Background="#FF0000" Foreground="White" Style="{DynamicResource ButtonStyleWithEdgeCorner}" Click="Button_Click"/>
         <Button Content="取消" Grid.Row="4" Grid.Column="1" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="70" MinHeight="30"
                 Background="#FF0000" Foreground="White" Style="{DynamicResource ButtonStyleWithEdgeCorner}" Click="Button_Click_1"/>
+
+        <fa:ImageAwesome x:Name="myLoading" Icon="Refresh" Spin="False" Height="48" Width="48"  VerticalAlignment="Center" Visibility="Hidden"
+                         Grid.RowSpan="5" Grid.ColumnSpan="2" HorizontalAlignment="Center" Foreground="Red"/>
 
     </Grid>
 </Window>

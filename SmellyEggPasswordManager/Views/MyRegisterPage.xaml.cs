@@ -1,19 +1,9 @@
 ﻿using SmellyEggPasswordManager.Controller;
 using SmellyEggPasswordManager.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SmellyEggPasswordManager.Views
 {
@@ -24,9 +14,12 @@ namespace SmellyEggPasswordManager.Views
     {
         private Frame MainFrame;
 
+        private LoginController _lcController;
+
         public MyRegisterPage(Frame mainFrame)
         {
             InitializeComponent();
+            _lcController = new LoginController();
             MainFrame = mainFrame;
         }
 
@@ -54,9 +47,10 @@ namespace SmellyEggPasswordManager.Views
             }
             else
             {
+                ShowLoadingAnimation();
                 User user = new User() { UserName = txtUserName.Text, UserPassword = txtPassword.Text, PasswordKey = txtUserKey.Text};
-                LoginController lc = new LoginController();
-                var result = await lc.TryRegister(user);
+                var result = await Task.Run(()=> _lcController.TryRegister(user));
+                ShowLoadingAnimation(false);
                 if (result)
                 {
                     MessageBox.Show("注册成功");
@@ -66,6 +60,26 @@ namespace SmellyEggPasswordManager.Views
                 {
                     txtTipsShow.Text = "注册失败，请换一个用户名!";
                 }
+            }
+        }
+
+        /// <summary>
+        /// 显示等待动画
+        /// </summary>
+        /// <param name="isLoading"></param>
+        private void ShowLoadingAnimation(bool isLoading = true)
+        {
+            if (isLoading)
+            {
+                myLoading.Visibility = Visibility.Visible;
+                myLoading.Spin = true;
+                IsEnabled = false;
+            }
+            else
+            {
+                IsEnabled = true;
+                myLoading.Spin = false;
+                myLoading.Visibility = Visibility.Hidden;
             }
         }
 

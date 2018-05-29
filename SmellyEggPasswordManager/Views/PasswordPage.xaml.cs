@@ -17,10 +17,12 @@ namespace SmellyEggPasswordManager.Views
         private Frame _mainFrame;
         private List<Account> _currentDataSource;
 
+        private LoginController _lcController;
+
         public PasswordPage(Frame mainframe, User user)
         {
             InitializeComponent();
-            lcController = new LoginController();
+            _lcController = new LoginController();
             _currentUser = user;
             _mainFrame = mainframe;
             Refresh();
@@ -28,9 +30,11 @@ namespace SmellyEggPasswordManager.Views
 
         private async void Refresh()
         {
+            ShowLoadingAnimation();
             if (object.Equals(_currentUser, null)) return;
-            LoginController lc = new LoginController();
-            _currentDataSource = await Task.Run(()=> lc.GetAccounts(_currentUser));
+            _currentDataSource = await Task.Run(()=> _lcController.GetAccounts(_currentUser));
+            ShowLoadingAnimation(false);
+            if (object.Equals(_currentDataSource, null)) return;
             var filterStr = _currentDataSource.AsParallel().GroupBy(p => p.AccountType)
                 .Select(p => p.FirstOrDefault().AccountType).ToList();
             if (filterStr == null) filterStr = new List<string>();
@@ -45,9 +49,26 @@ namespace SmellyEggPasswordManager.Views
 
             MyAccountListView.ItemsSource = null;
             MyAccountListView.ItemsSource = _currentDataSource;
-            if (!string.IsNullOrEmpty(txtFilter.Text))
+            FilterAccount();
+        }
+
+        /// <summary>
+        /// 显示等待动画
+        /// </summary>
+        /// <param name="isLoading"></param>
+        private void ShowLoadingAnimation(bool isLoading = true)
+        {
+            if (isLoading)
             {
-                FilterAccount();
+                myLoading.Visibility = Visibility.Visible;
+                myLoading.Spin = true;
+                IsEnabled = false;
+            }
+            else
+            {
+                IsEnabled = true;
+                myLoading.Spin = false;
+                myLoading.Visibility = Visibility.Hidden;
             }
         }
 
@@ -58,7 +79,7 @@ namespace SmellyEggPasswordManager.Views
             {
                 newDataSource = _currentDataSource;
             }
-            
+            newDataSource = newDataSource.Where(p => p.AccountName.Contains(txtFilter.Text)).ToList();
             MyAccountListView.ItemsSource = null;
             MyAccountListView.ItemsSource = newDataSource;
         }
@@ -81,26 +102,6 @@ namespace SmellyEggPasswordManager.Views
             }
         }
 
-        /// <summary>
-        /// 新增账户
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void AddAccount_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            var listType = MyListView.ItemsSource as List<string>;
-            if (object.Equals(listType, null) || listType.Count < 1)
-            {
-                MessageBox.Show("请先新建一个分组");
-                return;
-            }
-            var currentType = MyListView.SelectedIndex == -1 ? string.Empty : MyListView.SelectedItem.ToString();
-            frmNewAccount frm = new frmNewAccount(listType, _currentUser, currentType);
-            if (frm.ShowDialog() == true)
-            {
-                Refresh();
-            }
-        }
 
         /// <summary>
         /// 搜索
@@ -121,6 +122,10 @@ namespace SmellyEggPasswordManager.Views
             var newsource = _currentDataSource.Where(p => p.AccountName.Contains(txtFilter.Text)).ToList();
             MyAccountListView.ItemsSource = null;
             MyAccountListView.ItemsSource = newsource;
+            if (MyListView.SelectedIndex != -1)
+            {
+                MyListView_SelectionChanged(null, null);
+            }
         }
 
         private void SelectCurrentItem(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e)
@@ -129,7 +134,7 @@ namespace SmellyEggPasswordManager.Views
             item.IsSelected = true;
         }
 
-        LoginController lcController;
+        
 
         /// <summary>
         /// 删除账户
@@ -138,8 +143,11 @@ namespace SmellyEggPasswordManager.Views
         /// <param name="e"></param>
         private async void btnDelete_Click(object sender, RoutedEventArgs e)
         {
+            if (MessageBox.Show("确定要删除该账户吗？", "警告", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
             var selectedAccount = MyAccountListView.SelectedItem as Account;
-            var result = await lcController.DeleteAccount(selectedAccount);
+            ShowLoadingAnimation();
+            var result = await Task.Run(()=> _lcController.DeleteAccount(selectedAccount));
+            ShowLoadingAnimation(false);
             if (result)
             {
                 MessageBox.Show("删除成功！");
@@ -169,6 +177,43 @@ namespace SmellyEggPasswordManager.Views
             if (!object.Equals(item, null))
             {
                 ShowAccountByType(item.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 退出登录
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonLogoutClick(object sender, RoutedEventArgs e)
+        {
+            //if (!object.Equals(_mainFrame, null) && _mainFrame.CanGoBack)
+            //{
+            //    _lcController.Dispose();
+            //    _lcController = null;
+            //    _mainFrame.GoBack();
+            //}
+
+        }
+
+        /// <summary>
+        /// 新增用户
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonAddUserClick(object sender, RoutedEventArgs e)
+        {
+            var listType = MyListView.ItemsSource as List<string>;
+            if (object.Equals(listType, null) || listType.Count < 1)
+            {
+                MessageBox.Show("请先新建一个分组");
+                return;
+            }
+            var currentType = MyListView.SelectedIndex == -1 ? string.Empty : MyListView.SelectedItem.ToString();
+            frmNewAccount frm = new frmNewAccount(listType, _currentUser, currentType);
+            if (frm.ShowDialog() == true)
+            {
+                Refresh();
             }
         }
     }

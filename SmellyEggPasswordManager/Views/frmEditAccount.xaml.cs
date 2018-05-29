@@ -51,15 +51,18 @@ namespace SmellyEggPasswordManager.Views
             }
             else
             {
+                ShowLoadingAnimation();
                 Account newaccount = new Account() { AccountType = MyAccountTypeCombo.Text,
                 AccountName = txtAccountName.Text, AccountPassword = txtAccountPassword.Password};
                 if (!ValidDifference(newaccount, _oldAccount))
                 {
+                    ShowLoadingAnimation(false);
                     MessageBox.Show("更新账户成功！");
                     DialogResult = true;
                     return;
                 }
                 var result = await Task.Run(()=> lcController.UpdateAccount(newaccount, _oldAccount, _currentUser));
+                ShowLoadingAnimation(false);
                 if (result == true)
                 {
                     MessageBox.Show("更新账户成功！");
@@ -69,6 +72,26 @@ namespace SmellyEggPasswordManager.Views
                 {
                     MessageBox.Show("更新账户失败！");
                 }
+            }
+        }
+
+        /// <summary>
+        /// 显示等待动画
+        /// </summary>
+        /// <param name="isLoading"></param>
+        private void ShowLoadingAnimation(bool isLoading = true)
+        {
+            if (isLoading)
+            {
+                myLoading.Visibility = Visibility.Visible;
+                myLoading.Spin = true;
+                IsEnabled = false;
+            }
+            else
+            {
+                IsEnabled = true;
+                myLoading.Spin = false;
+                myLoading.Visibility = Visibility.Hidden;
             }
         }
 

@@ -23,9 +23,12 @@ namespace SmellyEggPasswordManager.Views
     {
         private User _currentUser;
 
+        private LoginController _lcController;
+
         public frmNewAccount(List<string> listType, User user, string accountType = "")
         {
             InitializeComponent();
+            _lcController = new LoginController();
             _currentUser = user;
 
             MyAccountTypeCombo.ItemsSource = null;
@@ -45,9 +48,11 @@ namespace SmellyEggPasswordManager.Views
             }
             else
             {
-                LoginController lc = new LoginController();
+                ShowLoadingAnimation();
+                
                 Account account = new Account() { AccountName = txtAccountName.Text, AccountPassword = txtAccountPassword.Password, AccountType = MyAccountTypeCombo.Text};
-                var result = await Task.Run(()=> lc.AddAccount(account, _currentUser));
+                var result = await Task.Run(()=> _lcController.AddAccount(account, _currentUser));
+                ShowLoadingAnimation(false);
                 if (result)
                 {
                     MessageBox.Show("新增账户成功！");
@@ -57,6 +62,26 @@ namespace SmellyEggPasswordManager.Views
                 {
                     MessageBox.Show("新增账户失败！");
                 }
+            }
+        }
+
+        /// <summary>
+        /// 显示等待动画
+        /// </summary>
+        /// <param name="isLoading"></param>
+        private void ShowLoadingAnimation(bool isLoading = true)
+        {
+            if (isLoading)
+            {
+                myLoading.Visibility = Visibility.Visible;
+                myLoading.Spin = true;
+                IsEnabled = false;
+            }
+            else
+            {
+                IsEnabled = true;
+                myLoading.Spin = false;
+                myLoading.Visibility = Visibility.Hidden;
             }
         }
 

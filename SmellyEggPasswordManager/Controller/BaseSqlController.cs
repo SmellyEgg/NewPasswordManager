@@ -12,10 +12,12 @@ namespace SmellyEggPasswordManager.Controller
     {
         private MySqlConnection _myConn;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
         public BaseSqlController()
         {
             _myConn = new MySqlConnection(Config._connectStr);
-
         }
 
         /// <summary>
@@ -35,6 +37,11 @@ namespace SmellyEggPasswordManager.Controller
             return reader;
         }
 
+        /// <summary>
+        /// 执行语句
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
         public async Task<int> ExcuteNonQuery(string sql)
         {
             if (_myConn.State != System.Data.ConnectionState.Open)

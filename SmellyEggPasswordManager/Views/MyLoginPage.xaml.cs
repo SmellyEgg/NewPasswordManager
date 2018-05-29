@@ -14,9 +14,12 @@ namespace SmellyEggPasswordManager.Views
     {
         private Frame _mainFrame;
 
+        private LoginController _lcController;
+
         public MyLoginPage(Frame MainFrame)
         {
             InitializeComponent();
+            _lcController = new LoginController();
             _mainFrame = MainFrame;
         }
 
@@ -52,13 +55,10 @@ namespace SmellyEggPasswordManager.Views
             }
             else
             {
+                ShowLoadingAnimation();
                 User user = new User() { UserName = txtUserName.Text, UserPassword = txtPassword.Password};
-                LoginController sql = new LoginController();
-                myLoading.Visibility = Visibility.Visible;
-                myLoading.Spin = true;
-                var result = await Task.Run(()=> sql.TryLogin(user));
-                myLoading.Visibility = Visibility.Hidden;
-                myLoading.Spin = false;
+                var result = await Task.Run(()=> _lcController.TryLogin(user));
+                ShowLoadingAnimation(false);
                 if (!object.Equals(result, null))
                 {
                     MessageBox.Show("登陆成功");
@@ -69,6 +69,26 @@ namespace SmellyEggPasswordManager.Views
                 {
                     txtTipsShow.Text = "账号或者密码不正确";
                 }
+            }
+        }
+
+        /// <summary>
+        /// 显示等待动画
+        /// </summary>
+        /// <param name="isLoading"></param>
+        private void ShowLoadingAnimation(bool isLoading = true)
+        {
+            if (isLoading)
+            {
+                myLoading.Visibility = Visibility.Visible;
+                myLoading.Spin = true;
+                IsEnabled = false;
+            }
+            else
+            {
+                IsEnabled = true;
+                myLoading.Spin = false;
+                myLoading.Visibility = Visibility.Hidden;
             }
         }
 
@@ -95,6 +115,18 @@ namespace SmellyEggPasswordManager.Views
             else
             {
                 return true;
+            }
+        }
+
+        private void txtPassword_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtPassword.Password))
+            {
+                txtTipsForPassword.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                txtTipsForPassword.Visibility = Visibility.Hidden;
             }
         }
     }
