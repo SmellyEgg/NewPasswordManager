@@ -61,9 +61,16 @@ namespace SmellyEggPasswordManager.Views
                 ShowLoadingAnimation(false);
                 if (!object.Equals(result, null))
                 {
-                    MessageBox.Show("登陆成功");
+                    //MessageBox.Show("登陆成功");
                     //跳转到密码管理界面
-                    _mainFrame.Navigate(new PasswordPage(_mainFrame, result));
+                    if (CmbType.SelectedIndex == (int)LoginType.passwordManager)
+                    {
+                        _mainFrame.Navigate(new PasswordPage(_mainFrame, result));
+                    }
+                    else if (CmbType.SelectedIndex == (int)LoginType.noteManager)
+                    {
+                        _mainFrame.Navigate(new NotePage(_mainFrame, result));
+                    }
                 }
                 else
                 {
@@ -71,6 +78,13 @@ namespace SmellyEggPasswordManager.Views
                 }
             }
         }
+
+        internal enum LoginType
+        {
+            passwordManager,
+            noteManager
+        }
+
 
         /// <summary>
         /// 显示等待动画
@@ -108,7 +122,7 @@ namespace SmellyEggPasswordManager.Views
         /// <returns></returns>
         private bool Valid()
         {
-            if (string.IsNullOrEmpty(txtUserName.Text.Trim()) || string.IsNullOrEmpty(txtPassword.Password.Trim()))
+            if (string.IsNullOrEmpty(txtUserName.Text.Trim()) || string.IsNullOrEmpty(txtPassword.Password.Trim()) || CmbType.SelectedIndex == -1)
             {
                 return false;
             }
@@ -117,6 +131,7 @@ namespace SmellyEggPasswordManager.Views
                 return true;
             }
         }
+
 
         private void txtPassword_KeyUp(object sender, KeyEventArgs e)
         {

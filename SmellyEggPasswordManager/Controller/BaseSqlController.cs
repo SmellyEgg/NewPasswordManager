@@ -34,6 +34,7 @@ namespace SmellyEggPasswordManager.Controller
             var cmd = _myConn.CreateCommand();
             cmd.CommandText = sql;
             var reader = await cmd.ExecuteReaderAsync();
+            //await _myConn.CloseAsync();
             return reader;
         }
 

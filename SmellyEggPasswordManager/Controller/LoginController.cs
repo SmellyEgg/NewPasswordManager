@@ -1,5 +1,4 @@
-﻿using MySql.Data.MySqlClient;
-using SmellyEggPasswordManager.Models;
+﻿using SmellyEggPasswordManager.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,8 +11,14 @@ namespace SmellyEggPasswordManager.Controller
     public class LoginController : BaseSqlController
     {
 
+        /// <summary>
+        /// 登陆
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public async Task<User> TryLogin(User user)
         {
+            System.Data.Common.DbDataReader reader;
             try
             {
                 //using (var conn = new MySqlConnection(Config._connectStr))
@@ -41,21 +46,25 @@ namespace SmellyEggPasswordManager.Controller
                 string sql = "select PasswordKey from MyUser where UserName = '{0}' and UserPassword = '{1}'";
                 var password = SmellyEggCrypt.CryPtService.DESEncrypt(user.UserPassword, Config.decryKey);
                 sql = string.Format(sql, user.UserName, password);
-                var reader = await ExcuteQuery(sql);
+                reader = await ExcuteQuery(sql);
                 while (await reader.ReadAsync())
                 {
                     if (reader != null && reader.FieldCount > 0)
                     {
                         user.PasswordKey = SmellyEggCrypt.CryPtService.DESDecrypt(reader[0].ToString(), Config.decryKey);
+                        reader.Close();
+                        reader = null;
                         return user;
                     }
                 }
-                reader.Close();
-                reader = null;
+                
             }
             catch (Exception ex)
             {
                 string test = ex.Message;
+            }
+            finally
+            {
             }
             return null;
         }
@@ -153,6 +162,7 @@ namespace SmellyEggPasswordManager.Controller
                     }
                 }
                 reader.Close();
+                reader = null;
                 return listAccount;
             }
             catch (Exception ex)
@@ -270,12 +280,5 @@ namespace SmellyEggPasswordManager.Controller
             return false;
         }
 
-        public async void Dispose()
-        {
-            //if (_myConn.State == System.Data.ConnectionState.Open)
-            //{
-            //    await _myConn.CloseAsync();
-            //}
-        }
     }
 }

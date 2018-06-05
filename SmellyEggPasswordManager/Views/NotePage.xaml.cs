@@ -5,24 +5,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace SmellyEggPasswordManager.Views
 {
     /// <summary>
-    /// PasswordPage.xaml 的交互逻辑
+    /// NotePage.xaml 的交互逻辑
     /// </summary>
-    public partial class PasswordPage : Page
+    public partial class NotePage : Page
     {
         private User _currentUser;
         private Frame _mainFrame;
-        private List<Account> _currentDataSource;
+        private List<Note> _currentDataSource;
 
-        private LoginController _lcController;
+        private NoteController _lcController;
 
-        public PasswordPage(Frame mainframe, User user)
+        public NotePage(Frame mainframe, User user)
         {
             InitializeComponent();
-            _lcController = new LoginController();
+            _lcController = new NoteController();
             _currentUser = user;
             _mainFrame = mainframe;
             Refresh();
@@ -35,15 +36,15 @@ namespace SmellyEggPasswordManager.Views
         {
             ShowLoadingAnimation();
             if (object.Equals(_currentUser, null)) return;
-            _currentDataSource = await Task.Run(()=> _lcController.GetAccounts(_currentUser));
+            _currentDataSource = await Task.Run(() => _lcController.GetNotes(_currentUser));
             ShowLoadingAnimation(false);
             if (object.Equals(_currentDataSource, null)) return;
-            var filterStr = _currentDataSource.AsParallel().GroupBy(p => p.AccountType)
-                .Select(p => p.FirstOrDefault().AccountType).ToList();
+            var filterStr = _currentDataSource.GroupBy(p => p.NoteType)
+                .Select(p => p.FirstOrDefault().NoteType).ToList();
             if (filterStr == null) filterStr = new List<string>();
             if (filterStr.Count > 0)
             {
-                filterStr.Add("所有分组");
+                filterStr.Add("所有分类");
             }
 
             MyListView.ItemsSource = null;
@@ -77,12 +78,12 @@ namespace SmellyEggPasswordManager.Views
 
         private void ShowAccountByType(string accountType)
         {
-            var newDataSource = _currentDataSource.Where(p => accountType.Equals(p.AccountType)).ToList();
-            if ("所有分组".Equals(accountType))
+            var newDataSource = _currentDataSource.Where(p => accountType.Equals(p.NoteType)).ToList();
+            if ("所有分类".Equals(accountType))
             {
                 newDataSource = _currentDataSource;
             }
-            newDataSource = newDataSource.Where(p => p.AccountName.Contains(txtFilter.Text)).ToList();
+            newDataSource = newDataSource.Where(p => p.NoteContent.Contains(txtFilter.Text)).ToList();
             MyAccountListView.ItemsSource = null;
             MyAccountListView.ItemsSource = newDataSource;
         }
@@ -129,7 +130,7 @@ namespace SmellyEggPasswordManager.Views
         private void FilterAccount()
         {
             if (_currentDataSource == null) return;
-            var newsource = _currentDataSource.Where(p => p.AccountName.Contains(txtFilter.Text)).ToList();
+            var newsource = _currentDataSource.Where(p => p.NoteContent.Contains(txtFilter.Text)).ToList();
             MyAccountListView.ItemsSource = null;
             MyAccountListView.ItemsSource = newsource;
             if (MyListView.SelectedIndex != -1)
@@ -138,13 +139,13 @@ namespace SmellyEggPasswordManager.Views
             }
         }
 
-        private void SelectCurrentItem(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e)
+        private void SelectCurrentItem(object sender, KeyboardFocusChangedEventArgs e)
         {
             ListViewItem item = (ListViewItem)sender;
             item.IsSelected = true;
         }
 
-        
+
 
         /// <summary>
         /// 删除账户
@@ -153,10 +154,10 @@ namespace SmellyEggPasswordManager.Views
         /// <param name="e"></param>
         private async void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("确定要删除该账户吗？", "警告", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
-            var selectedAccount = MyAccountListView.SelectedItem as Account;
+            if (MessageBox.Show("确定要删除该日报吗？", "警告", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
+            var selectedAccount = MyAccountListView.SelectedItem as Note;
             ShowLoadingAnimation();
-            var result = await Task.Run(()=> _lcController.DeleteAccount(selectedAccount));
+            var result = await Task.Run(() => _lcController.DeleteNote(selectedAccount, _currentUser.UserName));
             ShowLoadingAnimation(false);
             if (result)
             {
@@ -167,14 +168,14 @@ namespace SmellyEggPasswordManager.Views
             {
                 MessageBox.Show("删除失败!");
             }
-            
+
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
-            var selectedAccount = MyAccountListView.SelectedItem as Account;
+            var selectedAccount = MyAccountListView.SelectedItem as Note;
             var listType = MyListView.ItemsSource as List<string>;
-            frmEditAccount frm = new frmEditAccount(selectedAccount, listType, _currentUser);
+            frmNewNote frm = new frmNewNote(listType, _currentUser, string.Empty, true, selectedAccount);
             if (frm.ShowDialog() == true)
             {
                 Refresh();
@@ -214,11 +215,11 @@ namespace SmellyEggPasswordManager.Views
             var listType = MyListView.ItemsSource as List<string>;
             if (object.Equals(listType, null) || listType.Count < 1)
             {
-                MessageBox.Show("请先新建一个分组");
+                MessageBox.Show("请先新建一个分类");
                 return;
             }
             var currentType = MyListView.SelectedIndex == -1 ? string.Empty : MyListView.SelectedItem.ToString();
-            frmNewAccount frm = new frmNewAccount(listType, _currentUser, currentType);
+            frmNewNote frm = new frmNewNote(listType, _currentUser, currentType);
             if (frm.ShowDialog() == true)
             {
                 Refresh();
@@ -239,5 +240,6 @@ namespace SmellyEggPasswordManager.Views
             MyListView.ItemsSource = null;
             MyListView.ItemsSource = listSource;
         }
+
     }
 }
