@@ -23,6 +23,9 @@ namespace SmellyEggPasswordManager.Views
         public NotePage(Frame mainframe, User user)
         {
             InitializeComponent();
+
+            //Window.GetWindow(this).Title = "日报管理";
+
             _lcController = new NoteController();
             _currentUser = user;
             _mainFrame = mainframe;
@@ -41,8 +44,10 @@ namespace SmellyEggPasswordManager.Views
             if (object.Equals(_currentDataSource, null)) return;
             var filterStr = _currentDataSource.GroupBy(p => p.NoteType)
                 .Select(p => p.FirstOrDefault().NoteType).ToList();
+
+           // var result = _currentDataSource.Where(p => p.NoteContent.Equals("123")).Select(p => p.NoteTitle).FirstOrDefault();
             if (filterStr == null) filterStr = new List<string>();
-            if (filterStr.Count > 0)
+            if (filterStr.Count > 0 && !filterStr.Contains("所有分类"))
             {
                 filterStr.Add("所有分类");
             }
@@ -130,13 +135,14 @@ namespace SmellyEggPasswordManager.Views
         private void FilterAccount()
         {
             if (_currentDataSource == null) return;
-            var newsource = _currentDataSource.Where(p => p.NoteContent.Contains(txtFilter.Text)).ToList();
+            var newsource = _currentDataSource.Where(p => p.NoteContent.ToLower().Contains(txtFilter.Text.ToLower())
+                            || p.NoteTitle.ToLower().Contains(txtFilter.Text.ToLower())).ToList();
             MyAccountListView.ItemsSource = null;
             MyAccountListView.ItemsSource = newsource;
-            if (MyListView.SelectedIndex != -1)
-            {
-                MyListView_SelectionChanged(null, null);
-            }
+            //if (MyListView.SelectedIndex != -1)
+            //{
+            //    MyListView_SelectionChanged(null, null);
+            //}
         }
 
         private void SelectCurrentItem(object sender, KeyboardFocusChangedEventArgs e)

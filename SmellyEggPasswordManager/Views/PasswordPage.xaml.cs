@@ -22,6 +22,8 @@ namespace SmellyEggPasswordManager.Views
         public PasswordPage(Frame mainframe, User user)
         {
             InitializeComponent();
+            //Window.GetWindow(this).Title = "密码管理";
+
             _lcController = new LoginController();
             _currentUser = user;
             _mainFrame = mainframe;

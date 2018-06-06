@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="密码管理" Height="450" Width="800"
+        Title="臭鸡蛋" Height="662" Width="1184"
         MinWidth="600"
         MinHeight="450"
         WindowStartupLocation="CenterScreen"
@@ -15,6 +15,6 @@
 
         </Frame>
     </Grid>
-    
+
 
 </Window>

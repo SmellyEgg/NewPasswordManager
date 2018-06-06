@@ -143,5 +143,13 @@ namespace SmellyEggPasswordManager.Views
                 return true;
             }
         }
+
+        private void txtContent_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                btnOk_Click(null, null);
+            }
+        }
     }
 }

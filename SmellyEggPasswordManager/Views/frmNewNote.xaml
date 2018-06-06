@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
-        Title="frmNewNote" Height="334" Width="734"
+        Title="frmNewNote" Height="454" Width="829"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen">
     <Grid>
@@ -31,12 +31,12 @@
         <TextBlock Grid.Row="4" Text="内容"  Margin="5"/>
 
         <TextBox x:Name="txtContent" Grid.Row="5" TextWrapping="Wrap" AcceptsReturn="True" Margin="5"
-                 Style="{DynamicResource TextBoxStyleWithRoundEdge}"/>
+                 Style="{DynamicResource TextBoxStyleWithRoundEdge}" KeyDown="txtContent_KeyDown"/>
 
-        <Button x:Name="btnOk" Grid.Row="6" Content="确定" MinWidth="80" Height="20" HorizontalAlignment="Left" Background="#FF0000" Foreground="White" Style="{DynamicResource ButtonStyleWithEdgeCorner}"
+        <Button x:Name="btnOk" Grid.Row="6" Content="确定" MinWidth="80" MinHeight="20" HorizontalAlignment="Left" Background="#FF0000" Foreground="White" Style="{DynamicResource ButtonStyleWithEdgeCorner}"
                 Margin="50, 5, 5, 5" Click="btnOk_Click"/>
 
-        <Button x:Name="btnCancel" Grid.Row="6" Content="取消" MinWidth="80" Height="20" HorizontalAlignment="Left" Background="#FF0000" Foreground="White" Style="{DynamicResource ButtonStyleWithEdgeCorner}"
+        <Button x:Name="btnCancel" Grid.Row="6" Content="取消" MinWidth="80" MinHeight="20" HorizontalAlignment="Left" Background="#FF0000" Foreground="White" Style="{DynamicResource ButtonStyleWithEdgeCorner}"
                 Margin="200, 5, 5, 5"  Click="btnCancel_Click"/>
 
         <fa:ImageAwesome x:Name="myLoading" Icon="Refresh" Spin="False" Height="48" Width="48"  VerticalAlignment="Center" Visibility="Hidden"

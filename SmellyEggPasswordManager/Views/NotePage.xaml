@@ -61,6 +61,10 @@
             </Grid>
 
             <Grid Grid.Column="1">
+                <Grid.Background>
+                    <ImageBrush ImageSource="/Images/01.jpg" Stretch="UniformToFill"/>
+                </Grid.Background>
+
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
