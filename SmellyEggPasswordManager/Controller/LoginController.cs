@@ -65,6 +65,7 @@ namespace SmellyEggPasswordManager.Controller
             }
             finally
             {
+                CloseConnection();
             }
             return null;
         }

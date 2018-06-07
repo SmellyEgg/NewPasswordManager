@@ -57,6 +57,14 @@ namespace SmellyEggPasswordManager.Controller
             }
         }
 
+        public async void CloseConnection()
+        {
+            if (_myConn.State == System.Data.ConnectionState.Open)
+            {
+                await _myConn.CloseAsync();
+            }
+        }
+
 
 
     }

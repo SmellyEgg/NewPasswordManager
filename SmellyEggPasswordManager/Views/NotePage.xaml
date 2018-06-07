@@ -61,8 +61,9 @@
             </Grid>
 
             <Grid Grid.Column="1">
+
                 <Grid.Background>
-                    <ImageBrush ImageSource="/Images/01.jpg" Stretch="UniformToFill"/>
+                    <ImageBrush ImageSource="/Images/07.jpg" Stretch="UniformToFill"/>
                 </Grid.Background>
 
                 <Grid.RowDefinitions>
@@ -80,7 +81,11 @@
                     <Image Source="/Images/exit.png" Stretch="Fill"/>
                 </Button>
 
-                <ListView Grid.Row="1" x:Name="MyAccountListView">
+                <ListView Grid.Row="1" x:Name="MyAccountListView" Background="Transparent">
+                    <!--<ListView.Background>
+                        <ImageBrush ImageSource="/Images/01.jpg" Stretch="UniformToFill" Opacity="0.8"/>
+                    </ListView.Background>-->
+                    
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid Margin="10">
@@ -90,6 +95,8 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
+
+                                
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
